@@ -1,4 +1,3 @@
-# arkpz-pzpi-22-6-harmaiev-mykhailo
 ПЗПІ-22-6
 
 Гармаєв Михайло
