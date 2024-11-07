@@ -1,2 +1,7 @@
 # arkpz-pzpi-22-6-harmaiev-mykhailo
-Labworks and practicals of arkpz discipline
+ПЗПІ-22-6
+
+Гармаєв Михайло
+
+Програмна система для моніторінгу стану доріг
+
