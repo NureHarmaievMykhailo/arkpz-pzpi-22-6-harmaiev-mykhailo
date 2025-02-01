@@ -44,6 +44,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Додаємо контролери
 builder.Services.AddControllers();
 
+builder.Services.AddScoped<IRoadSectionService, RoadSectionService>();
+builder.Services.AddScoped<ISensorService, SensorService>();
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+    options.JsonSerializerOptions.WriteIndented = true;
+});
+
+
 // Налаштовуємо Swagger з підтримкою JWT
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

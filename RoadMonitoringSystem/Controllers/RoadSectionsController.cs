@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using RoadMonitoringSystem.Data;
 using RoadMonitoringSystem.Models;
+using RoadMonitoringSystem.Services;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using RoadMonitoringSystem.DTO;
 
 namespace RoadMonitoringSystem.Controllers
 {
@@ -17,15 +16,15 @@ namespace RoadMonitoringSystem.Controllers
     [ApiController]
     public class RoadSectionsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRoadSectionService _roadSectionService;
 
         /// <summary>
         /// Конструктор контролера.
         /// </summary>
-        /// <param name="context">Контекст бази даних.</param>
-        public RoadSectionsController(ApplicationDbContext context)
+        /// <param name="roadSectionService">Сервіс для роботи з ділянками доріг.</param>
+        public RoadSectionsController(IRoadSectionService roadSectionService)
         {
-            _context = context;
+            _roadSectionService = roadSectionService;
         }
 
         /// <summary>
@@ -36,7 +35,7 @@ namespace RoadMonitoringSystem.Controllers
         [Authorize(Roles = "User, Operator, Admin")]
         public async Task<ActionResult<IEnumerable<RoadSection>>> GetRoadSections()
         {
-            return await _context.RoadSections.Include(r => r.Sensors).ToListAsync();
+            return Ok(await _roadSectionService.GetAllRoadSectionsAsync());
         }
 
         /// <summary>
@@ -48,16 +47,12 @@ namespace RoadMonitoringSystem.Controllers
         [Authorize(Roles = "User, Operator, Admin")]
         public async Task<ActionResult<RoadSection>> GetRoadSection(int id)
         {
-            var roadSection = await _context.RoadSections
-                .Include(r => r.Sensors)
-                .FirstOrDefaultAsync(r => r.RoadSectionID == id);
-
+            var roadSection = await _roadSectionService.GetRoadSectionByIdAsync(id);
             if (roadSection == null)
             {
                 return NotFound();
             }
-
-            return roadSection;
+            return Ok(roadSection);
         }
 
         /// <summary>
@@ -70,29 +65,11 @@ namespace RoadMonitoringSystem.Controllers
         [Authorize(Roles = "Operator, Admin")]
         public async Task<IActionResult> UpdateRoadSection(int id, RoadSection roadSection)
         {
-            if (id != roadSection.RoadSectionID)
+            var success = await _roadSectionService.UpdateRoadSectionAsync(id, roadSection);
+            if (!success)
             {
-                return BadRequest();
+                return NotFound();
             }
-
-            _context.Entry(roadSection).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RoadSectionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
             return NoContent();
         }
 
@@ -103,13 +80,25 @@ namespace RoadMonitoringSystem.Controllers
         /// <returns>Додана ділянка дороги.</returns>
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<RoadSection>> CreateRoadSection(RoadSection roadSection)
+        public async Task<ActionResult<RoadSection>> CreateRoadSection([FromBody] CreateRoadSectionDto createDto)
         {
-            _context.RoadSections.Add(roadSection);
-            await _context.SaveChangesAsync();
+            if (string.IsNullOrWhiteSpace(createDto.Name) || string.IsNullOrWhiteSpace(createDto.Location))
+            {
+                return BadRequest("Name and Location are required.");
+            }
 
-            return CreatedAtAction("GetRoadSection", new { id = roadSection.RoadSectionID }, roadSection);
+            // Створення об'єкта RoadSection на основі DTO
+            var roadSection = new RoadSection
+            {
+                Name = createDto.Name,
+                Location = createDto.Location,
+                CreatedDate = DateTime.UtcNow
+            };
+
+            var newSection = await _roadSectionService.CreateRoadSectionAsync(roadSection);
+            return CreatedAtAction(nameof(GetRoadSection), new { id = newSection.RoadSectionID }, newSection);
         }
+
 
         /// <summary>
         /// Видаляє ділянку дороги за ID (тільки для Admin).
@@ -120,26 +109,12 @@ namespace RoadMonitoringSystem.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteRoadSection(int id)
         {
-            var roadSection = await _context.RoadSections.FindAsync(id);
-            if (roadSection == null)
+            var success = await _roadSectionService.DeleteRoadSectionAsync(id);
+            if (!success)
             {
                 return NotFound();
             }
-
-            _context.RoadSections.Remove(roadSection);
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        /// <summary>
-        /// Перевіряє, чи існує ділянка дороги за ID.
-        /// </summary>
-        /// <param name="id">ID ділянки.</param>
-        /// <returns>True, якщо існує.</returns>
-        private bool RoadSectionExists(int id)
-        {
-            return _context.RoadSections.Any(r => r.RoadSectionID == id);
         }
     }
 }

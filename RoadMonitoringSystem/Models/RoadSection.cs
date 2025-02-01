@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace RoadMonitoringSystem.Models
 {
@@ -25,12 +26,20 @@ namespace RoadMonitoringSystem.Models
         public DateTime CreatedDate { get; set; } // Дата створення
 
         // Зв'язок із сенсорами
-        public ICollection<Sensor> Sensors { get; set; } // Лист сенсорів для цієї ділянки
+        public ICollection<Sensor> Sensors { get; set; }
         public ICollection<Alert> Alerts { get; set; }
+
+        //[JsonIgnore]
+        //public ICollection<Sensor> Sensors { get; set; } = new List<Sensor>();
+
+        //[JsonIgnore]
+        //public ICollection<Alert> Alerts { get; set; } = new List<Alert>();
 
         public RoadSection()
         {
             Sensors = new List<Sensor>();
         }
+
+        
     }
 }
