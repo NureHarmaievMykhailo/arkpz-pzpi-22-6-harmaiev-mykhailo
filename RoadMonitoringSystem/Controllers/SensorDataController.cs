@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using RoadMonitoringSystem.Data;
+using RoadMonitoringSystem.DTO;
 using RoadMonitoringSystem.Models;
+using RoadMonitoringSystem.Services;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace RoadMonitoringSystem.Controllers
@@ -12,138 +11,110 @@ namespace RoadMonitoringSystem.Controllers
     /// <summary>
     /// Контролер для керування даними сенсорів.
     /// </summary>
-    [Authorize] // Всі методи вимагають авторизації
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class SensorDataController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ISensorDataService _sensorDataService;
 
         /// <summary>
-        /// Конструктор контролера.
+        /// Конструктор контролера SensorDataController.
         /// </summary>
-        /// <param name="context">Контекст бази даних.</param>
-        public SensorDataController(ApplicationDbContext context)
+        /// <param name="sensorDataService">Сервіс для обробки даних сенсорів.</param>
+        public SensorDataController(ISensorDataService sensorDataService)
         {
-            _context = context;
+            _sensorDataService = sensorDataService;
         }
 
         /// <summary>
-        /// Отримує список всіх даних сенсорів.
+        /// Отримує всі дані сенсорів.
         /// </summary>
-        /// <returns>Список даних сенсорів.</returns>
         [HttpGet]
         [Authorize(Roles = "User, Operator, Admin")]
         public async Task<ActionResult<IEnumerable<SensorData>>> GetSensorData()
         {
-            return await _context.SensorData
-                .Include(sd => sd.Sensor)
-                .ThenInclude(s => s.RoadSection)
-                .ToListAsync();
+            var sensorData = await _sensorDataService.GetAllSensorDataAsync();
+            return Ok(sensorData);
         }
 
         /// <summary>
-        /// Отримує дані сенсора за ID.
+        /// Отримує дані сенсора за ідентифікатором.
         /// </summary>
-        /// <param name="id">ID даних сенсора.</param>
-        /// <returns>Деталі даних сенсора.</returns>
+        /// <param name="id">Ідентифікатор сенсора.</param>
         [HttpGet("{id}")]
         [Authorize(Roles = "User, Operator, Admin")]
         public async Task<ActionResult<SensorData>> GetSensorDataById(int id)
         {
-            var sensorData = await _context.SensorData
-                .Include(sd => sd.Sensor)
-                .ThenInclude(s => s.RoadSection)
-                .FirstOrDefaultAsync(sd => sd.SensorDataID == id);
-
+            var sensorData = await _sensorDataService.GetSensorDataByIdAsync(id);
             if (sensorData == null)
             {
                 return NotFound();
             }
-
-            return sensorData;
+            return Ok(sensorData);
         }
 
         /// <summary>
-        /// Оновлює інформацію про дані сенсора.
+        /// Оновлює дані сенсора.
         /// </summary>
-        /// <param name="id">ID даних сенсора.</param>
-        /// <param name="sensorData">Об'єкт із новими даними.</param>
-        /// <returns>Статус оновлення.</returns>
+        /// <param name="id">Ідентифікатор сенсора.</param>
+        /// <param name="sensorData">Об'єкт сенсорних даних для оновлення.</param>
         [HttpPut("{id}")]
         [Authorize(Roles = "Operator, Admin")]
         public async Task<IActionResult> UpdateSensorData(int id, SensorData sensorData)
         {
-            if (id != sensorData.SensorDataID)
+            var success = await _sensorDataService.UpdateSensorDataAsync(id, sensorData);
+            if (!success)
             {
-                return BadRequest();
+                return NotFound();
             }
-
-            _context.Entry(sensorData).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SensorDataExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
             return NoContent();
         }
 
         /// <summary>
-        /// Додає нові дані сенсора.
+        /// Додає нові дані сенсора. Приймає спрощений об'єкт DTO.
         /// </summary>
-        /// <param name="sensorData">Об'єкт нових даних сенсора.</param>
-        /// <returns>Додані дані сенсора.</returns>
+        /// <param name="createDto">Об'єкт DTO з вхідними даними сенсора.</param>
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<SensorData>> CreateSensorData(SensorData sensorData)
+        public async Task<ActionResult<SensorData>> CreateSensorData([FromBody] SensorDataDto createDto)
         {
-            _context.SensorData.Add(sensorData);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetSensorDataById", new { id = sensorData.SensorDataID }, sensorData);
+            try
+            {
+                var newSensorData = await _sensorDataService.CreateSensorDataAsync(createDto);
+                return CreatedAtAction(nameof(GetSensorDataById), new { id = newSensorData.SensorDataID }, newSensorData);
+            }
+            catch (System.ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>
-        /// Видаляє дані сенсора за ID.
+        /// Видаляє дані сенсора за ідентифікатором.
         /// </summary>
-        /// <param name="id">ID даних сенсора.</param>
-        /// <returns>Статус видалення.</returns>
+        /// <param name="id">Ідентифікатор сенсора.</param>
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteSensorData(int id)
         {
-            var sensorData = await _context.SensorData.FindAsync(id);
-            if (sensorData == null)
+            var success = await _sensorDataService.DeleteSensorDataAsync(id);
+            if (!success)
             {
                 return NotFound();
             }
-
-            _context.SensorData.Remove(sensorData);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
 
         /// <summary>
-        /// Перевіряє, чи існують дані сенсора за ID.
+        /// Генерує аналітичний звіт за даними сенсорів.
         /// </summary>
-        /// <param name="id">ID даних сенсора.</param>
-        /// <returns>True, якщо дані існують.</returns>
-        private bool SensorDataExists(int id)
+        [HttpGet("report")]
+        [Authorize(Roles = "Operator, Admin")]
+        public async Task<ActionResult<string>> GetAnalyticalReport()
         {
-            return _context.SensorData.Any(sd => sd.SensorDataID == id);
+            var report = await _sensorDataService.GenerateAnalyticalReportAsync();
+            return Ok(report);
         }
     }
 }

@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using RoadMonitoringSystem.Data;
 using RoadMonitoringSystem.Models;
+using RoadMonitoringSystem.Services;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using RoadMonitoringSystem.DTO;
 
 namespace RoadMonitoringSystem.Controllers
 {
@@ -17,131 +16,108 @@ namespace RoadMonitoringSystem.Controllers
     [ApiController]
     public class AlertsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IAlertService _alertService;
 
         /// <summary>
         /// Конструктор контролера.
         /// </summary>
-        /// <param name="context">Контекст бази даних.</param>
-        public AlertsController(ApplicationDbContext context)
+        /// <param name="alertService">Сервіс для роботи зі сповіщеннями.</param>
+        public AlertsController(IAlertService alertService)
         {
-            _context = context;
+            _alertService = alertService;
         }
 
         /// <summary>
-        /// Отримує список всіх сповіщень (доступно всім авторизованим).
+        /// Отримує список всіх сповіщень (доступно для Admin, Operator, User).
         /// </summary>
-        /// <returns>Список сповіщень.</returns>
         [HttpGet]
         [Authorize(Roles = "Admin, Operator, User")]
         public async Task<ActionResult<IEnumerable<Alert>>> GetAlerts()
         {
-            return await _context.Alerts
-                .Include(a => a.RoadSection)
-                .ToListAsync();
+            var alerts = await _alertService.GetAllAlertsAsync();
+            return Ok(alerts);
         }
 
         /// <summary>
-        /// Отримує сповіщення за ID (доступно всім авторизованим).
+        /// Отримує сповіщення за ID (доступно для Admin, Operator, User).
         /// </summary>
-        /// <param name="id">ID сповіщення.</param>
-        /// <returns>Деталі сповіщення.</returns>
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin, Operator, User")]
         public async Task<ActionResult<Alert>> GetAlert(int id)
         {
-            var alert = await _context.Alerts
-                .Include(a => a.RoadSection)
-                .FirstOrDefaultAsync(a => a.AlertID == id);
-
+            var alert = await _alertService.GetAlertByIdAsync(id);
             if (alert == null)
             {
                 return NotFound();
             }
-
-            return alert;
+            return Ok(alert);
         }
 
         /// <summary>
-        /// Оновлює інформацію про сповіщення (тільки для Operator, Admin).
+        /// Оновлює інформацію про сповіщення (тільки для Admin, Operator).
         /// </summary>
-        /// <param name="id">ID сповіщення.</param>
-        /// <param name="alert">Об'єкт із новими даними.</param>
-        /// <returns>Статус оновлення.</returns>
         [HttpPut("{id}")]
-        [Authorize(Roles = " Admin, Operator")]
+        [Authorize(Roles = "Admin, Operator")]
         public async Task<IActionResult> UpdateAlert(int id, Alert alert)
         {
-            if (id != alert.AlertID)
+            var success = await _alertService.UpdateAlertAsync(id, alert);
+            if (!success)
             {
-                return BadRequest();
+                return NotFound();
             }
-
-            _context.Entry(alert).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AlertExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
             return NoContent();
         }
 
         /// <summary>
-        /// Додає нове сповіщення (тільки для Admin).
+        /// Додає нове сповіщення (тільки для Admin). Використовує DTO для спрощення введення.\n
         /// </summary>
-        /// <param name="alert">Об'єкт нового сповіщення.</param>
-        /// <returns>Додане сповіщення.</returns>
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<Alert>> CreateAlert(Alert alert)
+        public async Task<ActionResult<Alert>> CreateAlert([FromBody] AlertDto alertDto)
         {
-            _context.Alerts.Add(alert);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetAlert", new { id = alert.AlertID }, alert);
+            var newAlert = await _alertService.CreateAlertAsync(alertDto);
+            return CreatedAtAction(nameof(GetAlert), new { id = newAlert.AlertID }, newAlert);
         }
 
         /// <summary>
         /// Видаляє сповіщення за ID (тільки для Admin).
         /// </summary>
-        /// <param name="id">ID сповіщення.</param>
-        /// <returns>Статус видалення.</returns>
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAlert(int id)
         {
-            var alert = await _context.Alerts.FindAsync(id);
-            if (alert == null)
+            var success = await _alertService.DeleteAlertAsync(id);
+            if (!success)
             {
                 return NotFound();
             }
-
-            _context.Alerts.Remove(alert);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
 
         /// <summary>
-        /// Перевіряє, чи існує сповіщення за ID.
+        /// Позначає сповіщення як вирішене (тільки для Admin, Operator).\n
         /// </summary>
-        /// <param name="id">ID сповіщення.</param>
-        /// <returns>True, якщо сповіщення існує.</returns>
-        private bool AlertExists(int id)
+        [HttpPut("{id}/resolve")]
+        [Authorize(Roles = "Admin, Operator")]
+        public async Task<IActionResult> MarkAlertResolved(int id)
         {
-            return _context.Alerts.Any(a => a.AlertID == id);
+            var success = await _alertService.MarkAlertResolvedAsync(id);
+            if (!success)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Генерує критичні сповіщення на основі даних сенсорів (тільки для Admin).\n
+        /// </summary>
+        [HttpPost("generate")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GenerateCriticalAlerts()
+        {
+            await _alertService.GenerateCriticalAlertsAsync();
+            return Ok(new { message = "Critical alerts generated." });
         }
     }
 }

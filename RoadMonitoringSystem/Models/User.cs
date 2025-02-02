@@ -10,20 +10,20 @@ namespace RoadMonitoringSystem.Models
     {
         [Key]
         [Required]
-        public int UserID { get; set; } // Унікальний ідентифікатор користувача
+        public int UserID { get; set; }
 
         [Required]
         [MaxLength(50)]
-        public string Username { get; set; } // Ім'я користувача (логін)
+        public string Username { get; set; }
 
         [Required]
         [MaxLength(255)]
-        public string PasswordHash { get; set; } // Хеш пароля
+        public string PasswordHash { get; set; }
 
         [Required]
-        public UserRoles Role { get; set; } // Роль користувача (наприклад, "Адміністратор", "Працівник")
+        public UserRoles Role { get; set; }
 
         [Required]
-        public DateTime CreatedDate { get; set; } // Дата створення облікового запису
+        public DateTime CreatedDate { get; set; }
     }
 }

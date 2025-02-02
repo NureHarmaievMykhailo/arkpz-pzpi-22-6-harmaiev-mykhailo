@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RoadMonitoringSystem.Data;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using RoadMonitoringSystem.Models;
+using RoadMonitoringSystem.Services;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using RoadMonitoringSystem.DTO;
 
 namespace RoadMonitoringSystem.Controllers
 {
@@ -17,108 +16,101 @@ namespace RoadMonitoringSystem.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IUserService _userService;
 
-        public UsersController(ApplicationDbContext context)
+        public UsersController(IUserService userService)
         {
-            _context = context;
+            _userService = userService;
         }
 
         /// <summary>
         /// Отримує список всіх користувачів (доступно для User, Operator, Admin).
         /// </summary>
-        [Authorize(Roles = "User,Operator,Admin")]
         [HttpGet]
+        [Authorize(Roles = "User,Operator,Admin")]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            return Ok(await _userService.GetAllUsersAsync());
         }
 
         /// <summary>
         /// Отримує користувача за ID (доступно для User, Operator, Admin).
         /// </summary>
-        [Authorize(Roles = "User,Operator,Admin")]
         [HttpGet("{id}")]
+        [Authorize(Roles = "User,Operator,Admin")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-
+            var user = await _userService.GetUserByIdAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
-
-            return user;
+            return Ok(user);
         }
 
         /// <summary>
-        /// Оновлює інформацію про користувача (доступно лише для Admin).
+        /// Реєструє нового користувача з хешованим паролем.
         /// </summary>
-        [Authorize(Roles = "Admin")]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, User user)
+        [HttpPost("register")]
+        [AllowAnonymous]
+        public async Task<ActionResult<User>> Register([FromBody] UserRegisterDto userDto)
         {
-            if (id != user.UserID)
+            // Перевіряємо, чи це адміністратор
+            bool isAdmin = User.IsInRole(UserRoles.Admin.ToString());
+
+            var user = await _userService.RegisterUserAsync(userDto, isAdmin);
+            if (user == null)
             {
-                return BadRequest();
+                return BadRequest(new { message = "Username already exists" });
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            return CreatedAtAction(nameof(GetUser), new { id = user.UserID }, user);
+        }
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
 
+        /// <summary>
+        /// Авторизує користувача і повертає JWT-токен.
+        /// </summary>
+        [HttpPost("login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login([FromBody] UserLoginDto loginDto)
+        {
+            var token = await _userService.AuthenticateUserAsync(loginDto);
+            if (token == null)
+            {
+                return Unauthorized(new { message = "Invalid credentials" });
+            }
+            return Ok(new { token });
+        }
+
+        /// <summary>
+        /// Оновлює роль користувача (доступно лише для Admin).
+        /// </summary>
+        [HttpPut("{id}/role")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateUserRole(int id, [FromBody] UserRoles newRole)
+        {
+            var success = await _userService.UpdateUserRoleAsync(id, newRole);
+            if (!success)
+            {
+                return NotFound();
+            }
             return NoContent();
-        }
-
-        /// <summary>
-        /// Додає нового користувача (доступно лише для Admin).
-        /// </summary>
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        public async Task<ActionResult<User>> CreateUser(User user)
-        {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetUser", new { id = user.UserID }, user);
         }
 
         /// <summary>
         /// Видаляє користувача за ID (доступно лише для Admin).
         /// </summary>
-        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var success = await _userService.DeleteUserAsync(id);
+            if (!success)
             {
                 return NotFound();
             }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool UserExists(int id)
-        {
-            return _context.Users.Any(u => u.UserID == id);
         }
     }
 }

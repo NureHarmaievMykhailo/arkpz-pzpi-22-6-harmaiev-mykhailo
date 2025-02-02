@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace RoadMonitoringSystem.Models
 {
@@ -33,5 +34,8 @@ namespace RoadMonitoringSystem.Models
         // Навігаційна властивість для зв’язку з RoadSection
         [ForeignKey("RoadSectionID")]
         public RoadSection RoadSection { get; set; } // Ділянка, до якої належить сповіщення
+
+        //[JsonIgnore] // Запобігає циклічній серіалізації
+        //public RoadSection RoadSection { get; set; }
     }
 }

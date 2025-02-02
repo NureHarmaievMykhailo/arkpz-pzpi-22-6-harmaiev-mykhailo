@@ -35,11 +35,10 @@ namespace RoadMonitoringSystem.Models
         //[JsonIgnore]
         //public ICollection<Alert> Alerts { get; set; } = new List<Alert>();
 
-        public RoadSection()
-        {
-            Sensors = new List<Sensor>();
-        }
-
+        //public RoadSection()
+        //{
+        //    Sensors = new List<Sensor>();
+        //}
         
     }
 }

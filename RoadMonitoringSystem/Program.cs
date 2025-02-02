@@ -5,6 +5,7 @@ using RoadMonitoringSystem.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,18 +42,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(key)
         };
     });
+
 // Додаємо контролери
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IRoadSectionService, RoadSectionService>();
 builder.Services.AddScoped<ISensorService, SensorService>();
+builder.Services.AddScoped<ISensorDataService, SensorDataService>();
+builder.Services.AddScoped<IAlertService, AlertService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
     options.JsonSerializerOptions.WriteIndented = true;
 });
-
 
 // Налаштовуємо Swagger з підтримкою JWT
 builder.Services.AddEndpointsApiExplorer();
@@ -63,6 +68,11 @@ builder.Services.AddSwaggerGen(c =>
         Title = "Road Monitoring System API",
         Version = "v1"
     });
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
+
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",

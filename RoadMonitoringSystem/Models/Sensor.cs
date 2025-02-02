@@ -33,6 +33,6 @@ namespace RoadMonitoringSystem.Models
 
         public ICollection<SensorData> SensorData { get; set; }
 
-        public ICollection<Alert> Alerts { get; set; }
+        //public ICollection<Alert> Alerts { get; set; }
     }
 }

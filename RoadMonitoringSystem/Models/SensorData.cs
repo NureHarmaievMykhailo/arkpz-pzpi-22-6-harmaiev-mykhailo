@@ -21,7 +21,7 @@ namespace RoadMonitoringSystem.Models
         public string Parameter { get; set; } // Назва параметра (наприклад, "Температура", "Лід")
 
         [Required]
-        public float DataValue { get; set; } // Значення параметра
+        public double DataValue { get; set; } // Значення параметра
 
         [Required]
         public DateTime Timestamp { get; set; } // Час і дата отримання даних
