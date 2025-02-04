@@ -17,7 +17,7 @@ namespace RoadMonitoringSystem.Services
         Task<IEnumerable<Alert>> GetAllAlertsAsync();
         Task<Alert?> GetAlertByIdAsync(int id);
         Task<Alert> CreateAlertAsync(AlertDto alertDto);
-        Task<bool> UpdateAlertAsync(int id, Alert alert);
+        Task<bool> UpdateAlertAsync(int id, AlertDto alert);
         Task<bool> DeleteAlertAsync(int id);
         Task<bool> MarkAlertResolvedAsync(int id);
         // Метод для генерації критичних сповіщень (імітація роботи IoT сенсорів)
@@ -59,6 +59,18 @@ namespace RoadMonitoringSystem.Services
         /// </summary>
         public async Task<Alert> CreateAlertAsync(AlertDto alertDto)
         {
+            var roadSection = await _context.RoadSections.FindAsync(alertDto.RoadSectionID);
+            if (roadSection == null)
+            {
+                throw new KeyNotFoundException($"Ділянку дороги з ID {alertDto.RoadSectionID} не знайдено.");
+            }
+
+            var validAlertTypes = new List<string> { "Мороз", "Яма", "Висока вологість", "Лід", "Температура" };
+            if (!validAlertTypes.Contains(alertDto.AlertType))
+            {
+                throw new ArgumentException($"Некоректний тип сповіщення: {alertDto.AlertType}. Доступні: {string.Join(", ", validAlertTypes)}.");
+            }
+
             var alert = new Alert
             {
                 RoadSectionID = alertDto.RoadSectionID,
@@ -74,14 +86,31 @@ namespace RoadMonitoringSystem.Services
         }
 
         /// <summary>
-        /// Оновлює дані сповіщення (наприклад, для відмітки про вирішення).
+        /// Оновлює дані сповіщення
         /// </summary>
-        public async Task<bool> UpdateAlertAsync(int id, Alert alert)
+        public async Task<bool> UpdateAlertAsync(int id, AlertDto alertDto)
         {
-            if (id != alert.AlertID)
+            var alert = await _context.Alerts.FindAsync(id);
+            if (alert == null)
             {
                 return false;
             }
+
+            var roadSection = await _context.RoadSections.FindAsync(alertDto.RoadSectionID);
+            if (roadSection == null)
+            {
+                throw new KeyNotFoundException($"Ділянку дороги з ID {alertDto.RoadSectionID} не знайдено.");
+            }
+
+            var validAlertTypes = new List<string> { "Мороз", "Яма", "Висока вологість", "Лід", "Температура" };
+            if (!validAlertTypes.Contains(alertDto.AlertType))
+            {
+                throw new ArgumentException($"Некоректний тип сповіщення: {alertDto.AlertType}. Доступні: {string.Join(", ", validAlertTypes)}.");
+            }
+
+            alert.RoadSectionID = alertDto.RoadSectionID;
+            alert.AlertType = alertDto.AlertType;
+            alert.Message = alertDto.Message;
 
             _context.Entry(alert).State = EntityState.Modified;
 

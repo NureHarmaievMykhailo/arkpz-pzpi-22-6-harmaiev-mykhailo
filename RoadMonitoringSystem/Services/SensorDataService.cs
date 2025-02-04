@@ -17,7 +17,7 @@ namespace RoadMonitoringSystem.Services
         Task<SensorData?> GetSensorDataByIdAsync(int id);
         Task<SensorData> CreateSensorDataAsync(SensorData sensorData);
         Task<SensorData> CreateSensorDataAsync(SensorDataDto dto);
-        Task<bool> UpdateSensorDataAsync(int id, SensorData sensorData);
+        Task<bool> UpdateSensorDataAsync(int id, SensorDataDto dto);
         Task<bool> DeleteSensorDataAsync(int id);
         Task<string> GenerateAnalyticalReportAsync();
     }
@@ -90,23 +90,38 @@ namespace RoadMonitoringSystem.Services
             return await CreateSensorDataAsync(sensorData);
         }
 
-        public async Task<bool> UpdateSensorDataAsync(int id, SensorData sensorData)
+        public async Task<bool> UpdateSensorDataAsync(int id, SensorDataDto dto)
         {
-            if (id != sensorData.SensorDataID)
+            if (!allowedParameters.Contains(dto.Parameter))
+            {
+                throw new ArgumentException($"Неприпустимий параметр '{dto.Parameter}'. Дозволені значення: {string.Join(", ", allowedParameters)}");
+            }
+
+            var sensorData = await _context.SensorData.FindAsync(id);
+            if (sensorData == null)
             {
                 return false;
             }
+
+            var sensor = await _context.Sensors.FindAsync(dto.SensorID);
+            if (sensor == null)
+            {
+                throw new ArgumentException($"Сенсор з ID {dto.SensorID} не знайдено.");
+            }
+
+            // Оновлення даних сенсора
+            sensorData.SensorID = dto.SensorID;
+            sensorData.Parameter = dto.Parameter;
+            sensorData.DataValue = dto.DataValue;
+            sensorData.Timestamp = dto.Timestamp;
 
             _context.Entry(sensorData).State = EntityState.Modified;
 
             try
             {
                 await _context.SaveChangesAsync();
-                var sensor = await _context.Sensors.FindAsync(sensorData.SensorID);
-                if (sensor != null)
-                {
-                    await CheckAndSaveCriticalAlerts(sensor.RoadSectionID, sensorData.Parameter, sensorData.DataValue);
-                }
+                await CheckAndSaveCriticalAlerts(sensor.RoadSectionID, sensorData.Parameter, sensorData.DataValue);
+                await AnalyzeSensorDataAsync(sensorData);
                 return true;
             }
             catch (DbUpdateConcurrencyException)
@@ -121,6 +136,7 @@ namespace RoadMonitoringSystem.Services
                 }
             }
         }
+
 
         public async Task<bool> DeleteSensorDataAsync(int id)
         {

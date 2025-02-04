@@ -58,7 +58,7 @@ namespace RoadMonitoringSystem.Controllers
         /// </summary>
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin, Operator")]
-        public async Task<IActionResult> UpdateAlert(int id, Alert alert)
+        public async Task<IActionResult> UpdateAlert(int id, AlertDto alert)
         {
             var success = await _alertService.UpdateAlertAsync(id, alert);
             if (!success)

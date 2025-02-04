@@ -61,7 +61,7 @@ namespace RoadMonitoringSystem.Controllers
         /// <param name="sensorData">Об'єкт сенсорних даних для оновлення.</param>
         [HttpPut("{id}")]
         [Authorize(Roles = "Operator, Admin")]
-        public async Task<IActionResult> UpdateSensorData(int id, SensorData sensorData)
+        public async Task<IActionResult> UpdateSensorData(int id, SensorDataDto sensorData)
         {
             var success = await _sensorDataService.UpdateSensorDataAsync(id, sensorData);
             if (!success)

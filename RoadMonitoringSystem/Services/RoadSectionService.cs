@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RoadMonitoringSystem.Data;
+using RoadMonitoringSystem.DTO;
 using RoadMonitoringSystem.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace RoadMonitoringSystem.Services
         Task<IEnumerable<RoadSection>> GetAllRoadSectionsAsync();
         Task<RoadSection?> GetRoadSectionByIdAsync(int id);
         Task<RoadSection> CreateRoadSectionAsync(RoadSection roadSection);
-        Task<bool> UpdateRoadSectionAsync(int id, RoadSection roadSection);
+        Task<bool> UpdateRoadSectionAsync(int id, RoadSectionDto roadSectionDto);
         Task<bool> DeleteRoadSectionAsync(int id);
     }
 
@@ -48,12 +49,18 @@ namespace RoadMonitoringSystem.Services
         }
 
 
-        public async Task<bool> UpdateRoadSectionAsync(int id, RoadSection roadSection)
+        public async Task<bool> UpdateRoadSectionAsync(int id, RoadSectionDto roadSectionDto)
         {
-            if (id != roadSection.RoadSectionID)
+            var roadSection = await _context.RoadSections.FindAsync(id);
+            if (roadSection == null)
             {
                 return false;
             }
+
+            // Оновлення полів
+            roadSection.Name = roadSectionDto.Name;
+            roadSection.Location = roadSectionDto.Location;
+            roadSection.CreatedDate = roadSectionDto.CreatedDate;
 
             _context.Entry(roadSection).State = EntityState.Modified;
 

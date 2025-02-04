@@ -63,7 +63,7 @@ namespace RoadMonitoringSystem.Controllers
         /// <returns>Статус оновлення.</returns>
         [HttpPut("{id}")]
         [Authorize(Roles = "Operator, Admin")]
-        public async Task<IActionResult> UpdateRoadSection(int id, RoadSection roadSection)
+        public async Task<IActionResult> UpdateRoadSection(int id, RoadSectionDto roadSection)
         {
             var success = await _roadSectionService.UpdateRoadSectionAsync(id, roadSection);
             if (!success)
@@ -80,7 +80,7 @@ namespace RoadMonitoringSystem.Controllers
         /// <returns>Додана ділянка дороги.</returns>
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<RoadSection>> CreateRoadSection([FromBody] CreateRoadSectionDto createDto)
+        public async Task<ActionResult<RoadSection>> CreateRoadSection([FromBody] RoadSectionDto createDto)
         {
             if (string.IsNullOrWhiteSpace(createDto.Name) || string.IsNullOrWhiteSpace(createDto.Location))
             {

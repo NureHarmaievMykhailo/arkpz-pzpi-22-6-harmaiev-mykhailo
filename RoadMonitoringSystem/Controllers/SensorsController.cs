@@ -58,7 +58,7 @@ namespace RoadMonitoringSystem.Controllers
         /// </summary>
         [HttpPut("{id}")]
         [Authorize(Roles = "Operator, Admin")]
-        public async Task<IActionResult> UpdateSensor(int id, Sensor sensor)
+        public async Task<IActionResult> UpdateSensor(int id, SensorDto sensor)
         {
             var success = await _sensorService.UpdateSensorAsync(id, sensor);
             if (!success)
