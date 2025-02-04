@@ -1,1 +1,316 @@
+Міністерство освіти та науки України
+Харківський національний університет радіоелектроніки
+
+
+Кафедра ПІ
+
+
+
+Звіт
+з лабораторної роботи №2
+з дисципліни “Аналіз та рефакторинг коду”
+Тема роботи: «РОЗРОБКА БАЗИ ДАНИХ ДЛЯ СЕРВЕРНОЇ ЧАСТИНИ ПРОГРАМНОЇ СИСТЕМИ ТА ПРИКЛАДНОГО ПРОГРАМНОГО ІНТЕРФЕЙСУ (API)»
+
+Виконав:                                                                                ст. гр. ПЗПІ-22-6 Гармаєв М.С.
+Викладач:                                                                              Сокорчук І.П.
+
+
+
+
+
+
+
+
+
+Харків
+2024 р
+2 РОЗРОБКА БАЗИ ДАНИХ ДЛЯ СЕРВЕРНОЇ ЧАСТИНИ ПРОГРАМНОЇ СИСТЕМИ ТА ПРИКЛАДНОГО ПРОГРАМНОГО ІНТЕРФЕЙСУ (API).
+2.1  Мета роботи
+   На лабораторній роботі №2 потрібно розробити базу даних для серверної  частини  програмної системи та прикладного програмного інтерфейсу.
+2.2  Хід роботи
+1) Розробити будову програмної системи.
+Програмна система складається з трьох основних рівнів:
+a) Frontend (Клієнтська частина)
+b) Backend (Серверна частина, API)
+c) Database (База даних)
+Кожен рівень виконує свою функцію і забезпечує взаємодію між користувачем, системою обробки даних та інфраструктурою. Система побудована за принципом багаторівневої (n-tier) архітектури, де розподілено логіку між кількома рівнями. Для підвищення гнучкості застосовується архітектура REST API, що дозволяє з легкістю масштабувати систему та інтегрувати її з іншими сервісами.
+Компоненти програмної системи
+1. Frontend (Клієнтська частина)
+Призначенням клієнтської частини системи є надання інтерфейсу для взаємодії користувачів із системою, відображення даних про стан доріг, сенсорів та аналітики. А також отримання повідомлень про критичні ситуації.
+Для цього використовуються технології React.js для створення динамічного веб-інтерфейсу та Bootstrap для адаптивного дизайну. Fetch API – для виконання HTTP-запитів до API. 
+Задля успішної роботи було реалізовано функції:
+a) Авторизація та автентифікація через JWT
+b) Відображення даних із сенсорів та аналітики
+c) Управління дорожніми ділянками (додавання, редагування, перегляд)
+d) Отримання та фільтрація повідомлень про проблеми на дорогах
+2. Backend (Серверна частина)
+Основною задачею серверної частини є виконання всіх бізнес-операцій. Також вона відповідає за обробку запитів від клієнтів через API, збереження та аналіз даних сенсорів. А також генерація повідомлень про критичні ситуації, що відсилаються на пошту.
+Для цієї частини системи використалися .NET Core як основний фреймворк для серверної логіки, технологія ASP.NET Core Web API для побудови RESTful API. Swagger для тестування API та візуалізації клієнтської частини та JWT (JSON Web Token) для безпечної автентифікації та управління ролями.
+Щоб логіка backend була структурованою було створено такі компоненти:
+a) Контролери (Controllers) – обробка HTTP-запитів
+b) Сервіси (Services) – реалізація бізнес-логіки
+c) Репозиторії (Repositories) – робота з базою даних
+d) DTO (Data Transfer Objects) – обмін структурованими даними між компонентами
+Основні API-ендпоінти:
+/api/auth/login – авторизація користувачів
+/api/auth/register – реєстрація нового користувача
+/api/roadsections – керування дорожніми ділянками
+/api/sensors – робота із сенсорами
+/api/sensordata – отримання даних від сенсорів
+/api/alerts – сповіщення про небезпеку
+/api/users – управління користувачами
+3. Database (База даних)
+База даних програмної системи RoadMonitorngSystem створена для збереження всіх даних системи, взаємодія із сенсорами та збереження аналітичної інформації. У якості основної СУБД було обрано SQL Server. Оскільки мова програмування системи .NET, тому ORM для взаємодії з БД – Entity Framework Core. Для більш зручного адміністрування БД використовувалась SQL Server Management Studio (SSMS).
+Структура бази даних:
+Таблиця Users – користувачі системи 
+Таблиця RoadSections – ділянки доріг 
+Таблиця Sensors – сенсори на дорогах 
+Таблиця SensorData – дані від сенсорів  
+Таблиця Alerts – сповіщення про критичні ситуації
+
+Взаємодія між компонентами виглядає так: користувач реєструється/авторизується через Frontend та отримує JWT-токен. Frontend виконує запити до Backend через REST API. Backend перевіряє авторизацію, взаємодіє з базою даних через Entity Framework. IoT-сенсори передають дані в систему через окремий модуль збору інформації. Система аналізує стан доріг, створює сповіщення про небезпечні ділянки. Дорожні служби/адміністратори отримують сповіщення і приймають рішення про ремонт.
+
+2) Створити UML діаграму прецедентів для серверної частини системи
+
+
+Рисунок 2.1 – UML діаграму прецедентів для серверної частини системи
+3) Створити ER діаграму даних.
+
+Рисунок 2.2 – ER діаграма даних
+4) Розробити базу даних (БД) програмної системи.
+1. RoadSections (Ділянки доріг)
+Таблиця для зберігання інформації про ділянки доріг.
+ • RoadSectionID (INT, Primary Key) – унікальний ідентифікатор ділянки.
+ • Name (NVARCHAR(100)) – назва ділянки. 
+ • Location (NVARCHAR(255)) – місце розташування (географічні координати, адреса або опис).
+ • CreatedDate (DATETIME) – дата додавання ділянки.
+2. Sensors (Сенсори)
+Таблиця для зберігання інформації про сенсори, встановлені на ділянках доріг.
+ • SensorID (INT, Primary Key) – унікальний ідентифікатор сенсора.
+ • RoadSectionID (INT, Foreign Key) – ID ділянки, до якої прив’язаний сенсор.
+ • SensorType (NVARCHAR(50)) – тип сенсора (“Температура”, “Вологість”,  “Ямковість”, “Лід”).
+ • InstallationDate (DATE) – дата встановлення сенсора.
+ • Status (NVARCHAR(50)) – статус сенсора (наприклад, “Активний”, “Не працює”).
+3. SensorData (Дані від сенсорів)
+Таблиця для зберігання показників, отриманих від сенсорів.
+ • SensorDataID (INT, Primary Key) – унікальний ідентифікатор запису.
+ • SensorID (INT, Foreign Key) – ID сенсора, який надіслав дані.
+ • Parameter (NVARCHAR(50)) – параметр, який вимірюється (“Температура”, “Вологість”,  “Ямковість”, “Лід”).
+ • DataValue (FLOAT) – значення параметра.
+ • Timestamp (DATETIME) – дата й час отримання даних.
+4. Alerts (Сповіщення)
+Таблиця для зберігання інформації про критичні сповіщення.
+ • AlertID (INT, Primary Key) – унікальний ідентифікатор сповіщення.
+ • RoadSectionID (INT, Foreign Key) – ID ділянки, де виявлено проблему.
+ • AlertType (NVARCHAR(50)) – тип сповіщення.
+ • Message (NVARCHAR(255)) – опис проблеми.
+ • CreatedDate (DATETIME) – дата створення сповіщення.
+ • IsResolved (BIT) – статус вирішення (0 – не вирішено, 1 – вирішено).
+5. Users (Користувачі)
+Таблиця для зберігання інформації про користувачів системи.
+ • UserID (INT, Primary Key) – унікальний ідентифікатор користувача.
+ • Username (NVARCHAR(50)) – ім’я користувача.
+ • PasswordHash (NVARCHAR(255)) – хеш пароля для безпечного збереження.
+ • Role (NVARCHAR(50)) – роль користувача (“Адміністратор”, “Працівник”, “Користувач”).
+ • CreatedDate (DATETIME) – дата створення облікового запису.
+Зв’язки між таблицями
+ 1. RoadSections → Sensors: Один до багатьох (одна ділянка може мати кілька сенсорів).
+ 2. Sensors → SensorData: Один до багатьох (один сенсор може передавати багато даних).
+ 3. RoadSections → Alerts: Один до багатьох (одна ділянка може мати кілька сповіщень).
+ 4. Users: Автономна таблиця для авторизації та ролей.
+
+5) Створити діаграму структури БД.
+ROAD_SECTIONS
+Зберігає інформацію про ділянки доріг. Кожна ділянка має унікальний ідентифікатор, назву, місце розташування та дату створення.
+SENSORS
+Сенсори пов’язані з ділянками доріг (через поле RoadSectionID), мають тип, дату встановлення та статус.
+SENSOR_DATA
+Кожен сенсор генерує багато записів даних (наприклад, вимірювання температури, вологості тощо), що зберігаються в цій таблиці.
+ALERTS
+Сповіщення створюються для ділянок доріг при виявленні критичних ситуацій. Вони містять тип, повідомлення, дату створення та статус вирішення.
+USERS
+Зберігає дані про користувачів системи, включаючи хешований пароль, роль та дату створення.
+
+Рисунок 2.3 – Структура БД
+6) Розробити функції роботи з БД (ORM).
+Для роботи з базою даних у C# + .NET Core використовується Entity Framework Core (EF Core) як ORM. Було реалізовано CRUD операції для кожної з таблиць БД.
+Приклад коду для контролера керування ділянками доріг, конкретно метод що відправляє HTTP запит та отримує список усіх ділянок:
+namespace RoadMonitoringSystem.Controllers
+{
+    /// <summary>
+    /// Контролер для керування ділянками доріг.
+    /// </summary>
+    [Authorize]
+    [Route("api/[controller]")]
+    [ApiController]
+    public class RoadSectionsController : ControllerBase
+    {
+        private readonly IRoadSectionService _roadSectionService;
+
+        /// <summary>
+        /// Конструктор контролера.
+        /// </summary>
+        /// <param name="roadSectionService">Сервіс для роботи з ділянками доріг.</param>
+        public RoadSectionsController(IRoadSectionService roadSectionService)
+        {
+            _roadSectionService = roadSectionService;
+        }
+
+        /// <summary>
+        /// Отримує список всіх ділянок доріг (доступно всім авторизованим).
+        /// </summary>
+        /// <returns>Список ділянок доріг.</returns>
+        [HttpGet]
+        [Authorize(Roles = "User, Operator, Admin")]
+        public async Task<ActionResult<IEnumerable<RoadSection>>> GetRoadSections()
+        {
+            return Ok(await _roadSectionService.GetAllRoadSectionsAsync());
+        }
+}
+
+7) Розробити API (REST) для взаємодії серверної частини з клієнтами.
+API реалізовано на основі ASP.NET Core Web API, що дозволяє отримувати, обробляти та зберігати інформацію про стан доріг, сенсори та сповіщення. Контролери відправляють HTTP запити, а сервіси їх оброблюють. 
+RESTful-архітектура кожен ресурс має унікальний ендпоінт.
+HTTP-методи – використання стандартних методів:
+• GET – отримання даних
+• POST – створення нового запису
+• PUT – оновлення запису
+• DELETE – видалення запису
+JSON-формат – обмін даними через JSON.
+JWT-автентифікація – захист ендпоінтів.
+Swagger-документація – для тестування API.
+
+8) Створити специфікацію розробленого API.
+1. Авторизація (/api/auth)
+POST /api/auth/login – аутентифікація та отримання JWT-токена
+POST /api/auth/register – реєстрація нового користувача
+2. Управління ділянками доріг (/api/roadsections)
+GET /api/roadsections – отримання списку ділянок
+POST /api/roadsections – створення нової ділянки
+PUT /api/roadsections/{id} – оновлення інформації
+DELETE /api/roadsections/{id} – видалення
+3. Робота з сенсорами (/api/sensors, /api/sensordata)
+GET /api/sensors – отримання всіх сенсорів
+POST /api/sensors – додавання нового сенсора
+GET /api/sensordata – отримання показників від сенсорів
+POST /api/sensordata – запис даних із сенсорів
+4. Система сповіщень (/api/alerts)
+GET /api/alerts – отримання списку сповіщень
+POST /api/alerts – створення сповіщення
+PUT /api/alerts/{id} – відмітка про вирішення проблеми
+DELETE /api/alerts/{id} – видалення старих сповіщень
+5. Управління користувачами (/api/users)
+GET /api/users – отримання списку користувачів
+POST /api/users – створення нового користувача (включно із реєстрацією)
+PUT /api/users/{id} – оновлення інформації (ролей) користувачів
+DELETE /api/users/{id} – видалення користувачів
+
+9) Створити програмну реалізацію розробленого API та функцій роботи з БД.
+В процесі виконання цього пункту було реалізовано базові CRUD операції. Робота та тестування отриманого API з описом коду була описано у відеозаписі (див. Додаток Б). Приклад коду контролера та сервісу надано у Додатку А.
+
+10) Перевірити роботу створеного програмного коду серверної частини системи.
+Робота була перевірена за допомогою Swagger. У результаті отримано початковий вигляд системи із мінімальною логікою та повністю розроблено базу даних. Демонстрація тестування API викладена на YouTube (див. Додаток Б). 
+Додаток А «Приклад коду контролера та сервісу»
+Контролер який відправляє HTTP запити від сторони користувача до backend.
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using RoadMonitoringSystem.Models;
+using RoadMonitoringSystem.Services;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using RoadMonitoringSystem.DTO;
+
+namespace RoadMonitoringSystem.Controllers
+{
+    /// <summary>
+    /// Контролер для керування сенсорами.
+    /// </summary>
+    [Authorize] // Всі методи вимагають авторизації
+    [Route("api/[controller]")]
+    [ApiController]
+    public class SensorsController : ControllerBase
+    {
+        private readonly ISensorService _sensorService;
+
+        /// <summary>
+        /// Конструктор контролера.
+        /// </summary>
+        /// <param name="sensorService">Сервіс для роботи з сенсорами.</param>
+        public SensorsController(ISensorService sensorService)
+        {
+            _sensorService = sensorService;
+        }
+
+        /// <summary>
+        /// Отримує список всіх сенсорів (доступно для User, Operator, Admin).
+        /// </summary>
+        [HttpGet]
+        [Authorize(Roles = "User, Operator, Admin")]
+        public async Task<ActionResult<IEnumerable<Sensor>>> GetSensors()
+        {
+            var sensors = await _sensorService.GetAllSensorsAsync();
+            return Ok(sensors);
+        }
+
+        /// <summary>
+        /// Отримує деталі сенсора за ID (доступно для User, Operator, Admin).
+        /// </summary>
+        [HttpGet("{id}")]
+        [Authorize(Roles = "User, Operator, Admin")]
+        public async Task<ActionResult<Sensor>> GetSensor(int id)
+        {
+            var sensor = await _sensorService.GetSensorByIdAsync(id);
+            if (sensor == null)
+            {
+                return NotFound();
+            }
+            return Ok(sensor);
+        }
+
+        /// <summary>
+        /// Оновлює інформацію про сенсор (тільки для Operator, Admin).
+        /// </summary>
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Operator, Admin")]
+        public async Task<IActionResult> UpdateSensor(int id, Sensor sensor)
+        {
+            var success = await _sensorService.UpdateSensorAsync(id, sensor);
+            if (!success)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Додає новий сенсор (тільки для Admin).
+        /// </summary>
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<Sensor>> CreateSensor(SensorDto sensorDto)
+        {
+            var newSensor = await _sensorService.CreateSensorAsync(sensorDto);
+            return CreatedAtAction(nameof(GetSensor), new { id = newSensor.SensorID }, newSensor);
+        }
+
+        /// <summary>
+        /// Видаляє сенсор за ID (тільки для Admin).
+        /// </summary>
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteSensor(int id)
+        {
+            var success = await _sensorService.DeleteSensorAsync(id);
+            if (!success)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+    }
+}
+
+Додаток Б «Посилання»
+Посилання на відеозапис - https://youtu.be/xlKBFVkr0iA 
+Посилання на GitHub репозиторій - https://github.com/NureHarmaievMykhailo/arkpz-pzpi-22-6-harmaiev-mykhailo/tree/main/Task2 
 
