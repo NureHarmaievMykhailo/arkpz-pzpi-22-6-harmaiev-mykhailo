@@ -7,21 +7,21 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 
-# Копіюємо .sln файл і всі необхідні файли проекту
-COPY ["RoadMonitoringSystem/RoadMonitoringSystem.sln", "./RoadMonitoringSystem/"]
-COPY ["RoadMonitoringSystem/RoadMonitoringSystem.csproj", "./RoadMonitoringSystem/"]
+# Копіюємо .sln та .csproj файли в контейнер
+COPY ["RoadMonitoringSystem/RoadMonitoringSystem.sln", "/src/RoadMonitoringSystem/"]
+COPY ["RoadMonitoringSystem/RoadMonitoringSystem.csproj", "/src/RoadMonitoringSystem/"]
 
 # Відновлюємо залежності
-RUN dotnet restore "RoadMonitoringSystem/RoadMonitoringSystem.sln"
+RUN dotnet restore "/src/RoadMonitoringSystem/RoadMonitoringSystem.sln"
 
-# Копіюємо всі інші файли проекту
+# Копіюємо решту файлів проекту
 COPY . .
 
 # Будуємо проект
-RUN dotnet build "RoadMonitoringSystem.sln" -c Release -o /app/build
+RUN dotnet build "/src/RoadMonitoringSystem/RoadMonitoringSystem.sln" -c Release -o /app/build
 
 # Публікуємо застосунок
-RUN dotnet publish "RoadMonitoringSystem.sln" -c Release -o /app/publish
+RUN dotnet publish "/src/RoadMonitoringSystem/RoadMonitoringSystem.sln" -c Release -o /app/publish
 
 # Створюємо фінальний контейнер для запуску застосунку
 FROM base AS final
