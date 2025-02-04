@@ -11,7 +11,7 @@ namespace RoadMonitoringSystem.Controllers
     /// <summary>
     /// Контролер для керування даними сенсорів.
     /// </summary>
-    [Authorize]
+    ///[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class SensorDataController : ControllerBase
@@ -76,7 +76,7 @@ namespace RoadMonitoringSystem.Controllers
         /// </summary>
         /// <param name="createDto">Об'єкт DTO з вхідними даними сенсора.</param>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        ///[Authorize(Roles = "Admin")]
         public async Task<ActionResult<SensorData>> CreateSensorData([FromBody] SensorDataDto createDto)
         {
             try
