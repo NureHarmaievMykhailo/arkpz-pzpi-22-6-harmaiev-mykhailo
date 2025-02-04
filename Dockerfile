@@ -6,12 +6,18 @@ EXPOSE 80
 # Вказуємо образ для збірки застосунку .NET
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["RoadMonitoringSystem/RoadMonitoringSystem.sln", "RoadMonitoringSystem/"]
+
+# Копіюємо .sln файл і всі необхідні файли проекту
+COPY ["RoadMonitoringSystem/RoadMonitoringSystem.sln", "./RoadMonitoringSystem/"]
+COPY ["RoadMonitoringSystem/RoadMonitoringSystem.csproj", "./RoadMonitoringSystem/"]
+
+# Відновлюємо залежності
 RUN dotnet restore "RoadMonitoringSystem/RoadMonitoringSystem.sln"
 
-# Копіюємо решту файлів проекту та будуємо застосунок
+# Копіюємо всі інші файли проекту
 COPY . .
-WORKDIR "/src/RoadMonitoringSystem"
+
+# Будуємо проект
 RUN dotnet build "RoadMonitoringSystem.sln" -c Release -o /app/build
 
 # Публікуємо застосунок
