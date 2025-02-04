@@ -1,0 +1,182 @@
+Приклади коду
+До рефакторингу
+
+class Customer {
+    String phoneNumber;
+
+    Customer(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    void printPhoneNumber() {
+        System.out.println("Телефон: " + phoneNumber);
+    }
+}
+
+Після рефакторингу
+
+class PhoneNumber {
+    private String number;
+
+    PhoneNumber(String number) {
+        if (!isValid(number)) {
+            throw new IllegalArgumentException("Невірний формат номера телефону");
+        }
+        this.number = number;
+    }
+
+    private boolean isValid(String number) {
+        // Простий приклад валідації: перевірка на довжину та наявність лише цифр
+        return number != null && number.matches("\\d{10}");
+    }
+
+    @Override
+    public String toString() {
+        // Можна додати форматування номеру, наприклад, (XXX) XXX-XXXX
+        return number;
+    }
+}
+
+class Customer {
+    private PhoneNumber phoneNumber;
+
+    Customer(String phoneNumber) {
+        this.phoneNumber = new PhoneNumber(phoneNumber);
+    }
+
+    void printPhoneNumber() {
+        System.out.println("Телефон: " + phoneNumber);
+    }
+}
+
+Приклади коду
+До рефакторингу
+
+class TaxCalculator {
+    // Метод розрахунку податку приймає ставку податку як параметр
+    public double calculateTax(double income, double taxRate) {
+        return income * taxRate;
+    }
+}
+
+class Invoice {
+    private double income;
+
+    Invoice(double income) {
+        this.income = income;
+    }
+
+    double getIncome() {
+        return income;
+    }
+}
+Приклад виклику:
+Invoice invoice = new Invoice(10000);
+TaxCalculator calculator = new TaxCalculator();
+double tax = calculator.calculateTax(invoice.getIncome(), 0.15);
+System.out.println("Податок: " + tax);
+
+Після рефакторингу
+
+class TaxCalculator {
+    private double taxRate;
+
+    TaxCalculator(double taxRate) {
+        this.taxRate = taxRate;
+    }
+
+    // Тепер метод не приймає ставку податку, а використовує внутрішнє значення
+    public double calculateTax(double income) {
+        return income * taxRate;
+    }
+}
+
+class Invoice {
+    private double income;
+
+    Invoice(double income) {
+        this.income = income;
+    }
+
+    double getIncome() {
+        return income;
+    }
+}
+
+// Приклад використання
+public class Demo {
+    public static void main(String[] args) {
+        Invoice invoice = new Invoice(10000);
+        TaxCalculator calculator = new TaxCalculator(0.15);
+        double tax = calculator.calculateTax(invoice.getIncome());
+        System.out.println("Податок: " + tax);
+    }
+}
+
+Приклад коду
+До рефакторингу
+class Employee {
+    protected String name;
+    // Поле department є спільним для всіх співробітників, хоча використовується не всюди
+    protected String department;
+
+    Employee(String name, String department) {
+        this.name = name;
+        this.department = department;
+    }
+}
+
+class Manager extends Employee {
+    Manager(String name, String department) {
+        super(name, department);
+    }
+    // Менеджер може використовувати додаткові методи, але department може бути зайвим для інших типів
+}
+
+class Developer extends Employee {
+    Developer(String name, String department) {
+        super(name, department);
+    }
+    // Розробники мають специфічну логіку, де department може відрізнятися або взагалі не використовуватися
+}
+
+Після рефакторингу
+  
+class Employee {
+    protected String name;
+
+    Employee(String name) {
+        this.name = name;
+    }
+}
+
+class Manager extends Employee {
+    private String department;
+
+    Manager(String name, String department) {
+        super(name);
+        this.department = department;
+    }
+
+    String getDepartment() {
+        return department;
+    }
+}
+
+class Developer extends Employee {
+    Developer(String name) {
+        super(name);
+    }
+    // Поле department видалено, оскільки воно не використовується в цьому класі
+}
+
+// Приклад використання
+public class DemoPushDownField {
+    public static void main(String[] args) {
+        Manager manager = new Manager("Олена", "Продаж");
+        System.out.println("Менеджер " + manager.name + " працює в відділі " + manager.getDepartment());
+
+        Developer developer = new Developer("Іван");
+        System.out.println("Розробник " + developer.name);
+    }
+}
