@@ -438,4 +438,6 @@ Effective Java / Joshua Bloch. — Addison-Wesley, 2017.
 Google Java Style Guide: https://google.github.io/styleguide/javaguide.html
 PEP 8 — Style Guide for Python Code: https://peps.python.org/pep-0008/
 
-
+1.5 Посилання
+Посилання на відеозапис - https://youtu.be/B-lipxjhfgY 
+Посилання на GitHub репозиторій - https://github.com/NureHarmaievMykhailo/arkpz-pzpi-22-6-harmaiev-mykhailo/tree/main/Pract1 
