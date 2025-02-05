@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
 EXPOSE 80
 
-# Вказуємо образ для збірки застосунку .NET
+# Вказуємо образ для збірки застосунку .NET (SDK образ)
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 
@@ -20,15 +20,15 @@ COPY . .
 # Будуємо проект
 RUN dotnet build "/src/RoadMonitoringSystem/RoadMonitoringSystem.sln" -c Release -o /app/build
 
-# Публікуємо застосунок
+# Публікуємо застосунок (публікація має створити RoadMonitoringSystem.exe)
 RUN dotnet publish "/src/RoadMonitoringSystem/RoadMonitoringSystem.sln" -c Release -o /app/publish
 
 # Створюємо фінальний контейнер для запуску застосунку
 FROM base AS final
 WORKDIR /app
 
-# Копіюємо публіковану версію з попереднього етапу
+# Копіюємо публіковані файли з етапу build
 COPY --from=build /app/publish .
 
-# Вказуємо точку входу на правильний DLL файл
+# Точка входу: запускаємо виконуваний файл RoadMonitoringSystem.exe
 ENTRYPOINT ["dotnet", "RoadMonitoringSystem.exe"]
