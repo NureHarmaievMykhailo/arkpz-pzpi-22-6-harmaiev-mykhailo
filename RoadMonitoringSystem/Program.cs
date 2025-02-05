@@ -8,7 +8,7 @@ using System.Text;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
-
+Environment.SetEnvironmentVariable("ASPNETCORE_HOSTINGSTARTUPASSEMBLIES", "");
 // Додаємо налаштування бази даних (SQL Server)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
