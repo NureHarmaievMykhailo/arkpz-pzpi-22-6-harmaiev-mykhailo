@@ -30,5 +30,5 @@ WORKDIR /app
 # Копіюємо публіковані файли з етапу build
 COPY --from=build /app/publish .
 
-# Точка входу: запускаємо виконуваний файл RoadMonitoringSystem.exe
-ENTRYPOINT ["dotnet", "RoadMonitoringSystem.exe"]
+ENTRYPOINT ["sh", "-c", "dotnet /app/RoadMonitoringSystem.dll"]
+
