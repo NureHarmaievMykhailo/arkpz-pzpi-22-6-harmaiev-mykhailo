@@ -31,4 +31,4 @@ WORKDIR /app
 COPY --from=build /app/publish .
 
 # Вказуємо точку входу на правильний DLL файл
-ENTRYPOINT ["dotnet", "RoadMonitoringSystem.dll"]
+ENTRYPOINT ["dotnet", "RoadMonitoringSystem.exe"]
