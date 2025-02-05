@@ -1,5 +1,0 @@
-[build]
-command = "dotnet restore RoadMonitoringSystem/RoadMonitoringSystem.csproj && dotnet publish RoadMonitoringSystem/RoadMonitoringSystem.csproj --no-restore -c Release -o out"
-
-[start]
-command = "./out/RoadMonitoringSystem"

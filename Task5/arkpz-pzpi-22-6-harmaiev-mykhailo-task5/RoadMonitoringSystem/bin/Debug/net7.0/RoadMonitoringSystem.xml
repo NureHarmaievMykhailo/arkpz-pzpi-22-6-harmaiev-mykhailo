@@ -1,0 +1,354 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RoadMonitoringSystem</name>
+    </assembly>
+    <members>
+        <member name="T:RoadMonitoringSystem.Controllers.AlertsController">
+            <summary>
+            Контролер для керування сповіщеннями.
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.AlertsController.#ctor(RoadMonitoringSystem.Services.IAlertService)">
+            <summary>
+            Конструктор контролера.
+            </summary>
+            <param name="alertService">Сервіс для роботи зі сповіщеннями.</param>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.AlertsController.GetAlerts">
+            <summary>
+            Отримує список всіх сповіщень (доступно для Admin, Operator, User).
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.AlertsController.GetAlert(System.Int32)">
+            <summary>
+            Отримує сповіщення за ID (доступно для Admin, Operator, User).
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.AlertsController.UpdateAlert(System.Int32,RoadMonitoringSystem.DTO.AlertDto)">
+            <summary>
+            Оновлює інформацію про сповіщення (тільки для Admin, Operator).
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.AlertsController.CreateAlert(RoadMonitoringSystem.DTO.AlertDto)">
+            <summary>
+            Додає нове сповіщення (тільки для Admin). Використовує DTO для спрощення введення.\n
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.AlertsController.DeleteAlert(System.Int32)">
+            <summary>
+            Видаляє сповіщення за ID (тільки для Admin).
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.AlertsController.MarkAlertResolved(System.Int32)">
+            <summary>
+            Позначає сповіщення як вирішене (тільки для Admin, Operator).\n
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.AlertsController.GenerateCriticalAlerts">
+            <summary>
+            Генерує критичні сповіщення на основі даних сенсорів (тільки для Admin).\n
+            </summary>
+        </member>
+        <member name="T:RoadMonitoringSystem.Controllers.RoadSectionsController">
+            <summary>
+            Контролер для керування ділянками доріг.
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.RoadSectionsController.#ctor(RoadMonitoringSystem.Services.IRoadSectionService)">
+            <summary>
+            Конструктор контролера.
+            </summary>
+            <param name="roadSectionService">Сервіс для роботи з ділянками доріг.</param>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.RoadSectionsController.GetRoadSections">
+            <summary>
+            Отримує список всіх ділянок доріг (доступно всім авторизованим).
+            </summary>
+            <returns>Список ділянок доріг.</returns>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.RoadSectionsController.GetRoadSection(System.Int32)">
+            <summary>
+            Отримує ділянку дороги за ID (доступно всім авторизованим).
+            </summary>
+            <param name="id">ID ділянки.</param>
+            <returns>Деталі ділянки дороги.</returns>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.RoadSectionsController.UpdateRoadSection(System.Int32,RoadMonitoringSystem.DTO.RoadSectionDto)">
+            <summary>
+            Оновлює інформацію про ділянку дороги (тільки для Operator, Admin).
+            </summary>
+            <param name="id">ID ділянки.</param>
+            <param name="roadSection">Об'єкт із новими даними.</param>
+            <returns>Статус оновлення.</returns>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.RoadSectionsController.CreateRoadSection(RoadMonitoringSystem.DTO.RoadSectionDto)">
+            <summary>
+            Додає нову ділянку дороги (тільки для Admin).
+            </summary>
+            <param name="roadSection">Об'єкт нової ділянки дороги.</param>
+            <returns>Додана ділянка дороги.</returns>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.RoadSectionsController.DeleteRoadSection(System.Int32)">
+            <summary>
+            Видаляє ділянку дороги за ID (тільки для Admin).
+            </summary>
+            <param name="id">ID ділянки.</param>
+            <returns>Статус видалення.</returns>
+        </member>
+        <member name="T:RoadMonitoringSystem.Controllers.SensorDataController">
+             <summary>
+             Контролер для керування даними сенсорів.
+             </summary>
+            [Authorize]
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.SensorDataController.#ctor(RoadMonitoringSystem.Services.ISensorDataService)">
+            <summary>
+            Конструктор контролера SensorDataController.
+            </summary>
+            <param name="sensorDataService">Сервіс для обробки даних сенсорів.</param>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.SensorDataController.GetSensorData">
+            <summary>
+            Отримує всі дані сенсорів.
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.SensorDataController.GetSensorDataById(System.Int32)">
+            <summary>
+            Отримує дані сенсора за ідентифікатором.
+            </summary>
+            <param name="id">Ідентифікатор сенсора.</param>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.SensorDataController.UpdateSensorData(System.Int32,RoadMonitoringSystem.DTO.SensorDataDto)">
+            <summary>
+            Оновлює дані сенсора.
+            </summary>
+            <param name="id">Ідентифікатор сенсора.</param>
+            <param name="sensorData">Об'єкт сенсорних даних для оновлення.</param>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.SensorDataController.CreateSensorData(RoadMonitoringSystem.DTO.SensorDataDto)">
+            <summary>
+            Додає нові дані сенсора. Приймає спрощений об'єкт DTO.
+            </summary>
+            <param name="createDto">Об'єкт DTO з вхідними даними сенсора.</param>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.SensorDataController.DeleteSensorData(System.Int32)">
+            <summary>
+            Видаляє дані сенсора за ідентифікатором.
+            </summary>
+            <param name="id">Ідентифікатор сенсора.</param>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.SensorDataController.GetAnalyticalReport">
+            <summary>
+            Генерує аналітичний звіт за даними сенсорів.
+            </summary>
+        </member>
+        <member name="T:RoadMonitoringSystem.Controllers.SensorsController">
+            <summary>
+            Контролер для керування сенсорами.
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.SensorsController.#ctor(RoadMonitoringSystem.Services.ISensorService)">
+            <summary>
+            Конструктор контролера.
+            </summary>
+            <param name="sensorService">Сервіс для роботи з сенсорами.</param>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.SensorsController.GetSensors">
+            <summary>
+            Отримує список всіх сенсорів (доступно для User, Operator, Admin).
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.SensorsController.GetSensor(System.Int32)">
+            <summary>
+            Отримує деталі сенсора за ID (доступно для User, Operator, Admin).
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.SensorsController.UpdateSensor(System.Int32,RoadMonitoringSystem.DTO.SensorDto)">
+            <summary>
+            Оновлює інформацію про сенсор (тільки для Operator, Admin).
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.SensorsController.CreateSensor(RoadMonitoringSystem.DTO.SensorDto)">
+            <summary>
+            Додає новий сенсор (тільки для Admin).
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.SensorsController.DeleteSensor(System.Int32)">
+            <summary>
+            Видаляє сенсор за ID (тільки для Admin).
+            </summary>
+        </member>
+        <member name="T:RoadMonitoringSystem.Controllers.UsersController">
+            <summary>
+            Контролер для керування користувачами системи.
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.UsersController.GetUsers">
+            <summary>
+            Отримує список всіх користувачів (доступно для User, Operator, Admin).
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.UsersController.GetUser(System.Int32)">
+            <summary>
+            Отримує користувача за ID (доступно для User, Operator, Admin).
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.UsersController.Register(RoadMonitoringSystem.DTO.UserRegisterDto)">
+            <summary>
+            Реєструє нового користувача з хешованим паролем.
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.UsersController.Login(RoadMonitoringSystem.DTO.UserLoginDto)">
+            <summary>
+            Авторизує користувача і повертає JWT-токен.
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.UsersController.UpdateUserRole(System.Int32,RoadMonitoringSystem.Models.UserRoles)">
+            <summary>
+            Оновлює роль користувача (доступно лише для Admin).
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Controllers.UsersController.DeleteUser(System.Int32)">
+            <summary>
+            Видаляє користувача за ID (доступно лише для Admin).
+            </summary>
+        </member>
+        <member name="T:RoadMonitoringSystem.Migrations.UpdateUserRoleToString">
+            <inheritdoc />
+        </member>
+        <member name="M:RoadMonitoringSystem.Migrations.UpdateUserRoleToString.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RoadMonitoringSystem.Migrations.UpdateUserRoleToString.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RoadMonitoringSystem.Migrations.UpdateUserRoleToString.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RoadMonitoringSystem.Migrations.UpdateAlertModel">
+            <inheritdoc />
+        </member>
+        <member name="M:RoadMonitoringSystem.Migrations.UpdateAlertModel.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RoadMonitoringSystem.Migrations.UpdateAlertModel.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RoadMonitoringSystem.Migrations.UpdateAlertModel.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RoadMonitoringSystem.Migrations.RecreateAlertsTable">
+            <inheritdoc />
+        </member>
+        <member name="M:RoadMonitoringSystem.Migrations.RecreateAlertsTable.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RoadMonitoringSystem.Migrations.RecreateAlertsTable.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RoadMonitoringSystem.Migrations.RecreateAlertsTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RoadMonitoringSystem.Migrations.RemoveSensorIdFromAlerts">
+            <inheritdoc />
+        </member>
+        <member name="M:RoadMonitoringSystem.Migrations.RemoveSensorIdFromAlerts.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RoadMonitoringSystem.Models.Alert">
+            <summary>
+            Представляє сповіщення про критичну ситуацію на дорозі.
+            </summary>
+        </member>
+        <member name="T:RoadMonitoringSystem.Models.RoadSection">
+            <summary>
+            Представляє ділянку дороги.
+            </summary>
+        </member>
+        <member name="T:RoadMonitoringSystem.Models.Sensor">
+            <summary>
+            Представляє сенсор, встановлений на ділянці дороги.
+            </summary>
+        </member>
+        <member name="T:RoadMonitoringSystem.Models.SensorData">
+            <summary>
+            Представляє дані, отримані від сенсора.
+            </summary>
+        </member>
+        <member name="T:RoadMonitoringSystem.Models.User">
+            <summary>
+            Представляє користувача системи.
+            </summary>
+        </member>
+        <member name="T:RoadMonitoringSystem.Services.IAlertService">
+            <summary>
+            Інтерфейс для сервісу управління сповіщеннями.
+            </summary>
+        </member>
+        <member name="T:RoadMonitoringSystem.Services.AlertService">
+            <summary>
+            Сервіс для управління сповіщеннями.
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Services.AlertService.GetAllAlertsAsync">
+            <summary>
+            Отримує список всіх сповіщень.
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Services.AlertService.GetAlertByIdAsync(System.Int32)">
+            <summary>
+            Отримує сповіщення за ID.
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Services.AlertService.CreateAlertAsync(RoadMonitoringSystem.DTO.AlertDto)">
+            <summary>
+            Створює нове сповіщення на основі даних з DTO.
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Services.AlertService.UpdateAlertAsync(System.Int32,RoadMonitoringSystem.DTO.AlertDto)">
+            <summary>
+            Оновлює дані сповіщення
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Services.AlertService.DeleteAlertAsync(System.Int32)">
+            <summary>
+            Видаляє сповіщення за ID.
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Services.AlertService.MarkAlertResolvedAsync(System.Int32)">
+            <summary>
+            Позначає сповіщення як вирішене (IsResolved = true).
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Services.AlertService.GenerateCriticalAlertsAsync">
+            <summary>
+            Генерує критичні сповіщення на основі даних сенсорів (імітація роботи IoT-датчиків).\n
+            Приклад логіки: якщо температура нижче певного порогу або рівень вологості перевищує критичний рівень,\n
+            створюється сповіщення для відповідної ділянки дороги.\n
+            (Реалізація може бути розширена відповідно до вимог.)\n
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:RoadMonitoringSystem.Services.SensorDataService.AnalyzeSensorDataAsync(RoadMonitoringSystem.Models.SensorData)" -->
+        <member name="M:RoadMonitoringSystem.Services.UserService.RegisterUserAsync(RoadMonitoringSystem.DTO.UserRegisterDto,System.Boolean)">
+            <summary>
+            Реєстрація нового користувача з хешуванням пароля через BCrypt.
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Services.UserService.AuthenticateUserAsync(RoadMonitoringSystem.DTO.UserLoginDto)">
+            <summary>
+            Авторизація користувача через перевірку пароля у BCrypt.
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Services.UserService.UpdateUserRoleAsync(System.Int32,RoadMonitoringSystem.Models.UserRoles)">
+            <summary>
+            Оновлення ролі користувача.
+            </summary>
+        </member>
+        <member name="M:RoadMonitoringSystem.Services.UserService.DeleteUserAsync(System.Int32)">
+            <summary>
+            Видалення користувача.
+            </summary>
+        </member>
+    </members>
+</doc>

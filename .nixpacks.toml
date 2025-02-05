@@ -1,5 +1,0 @@
-[phases.setup]
-nixPkgs = ["dotnet-sdk_7"]
-
-[phases.build]
-workingDirectory = "RoadMonitoringSystem"

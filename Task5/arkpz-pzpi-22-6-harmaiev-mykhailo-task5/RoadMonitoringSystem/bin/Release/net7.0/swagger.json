@@ -1,0 +1,1220 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Road Monitoring System API",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/Alerts": {
+      "get": {
+        "tags": [
+          "Alerts"
+        ],
+        "summary": "Отримує список всіх сповіщень (доступно для Admin, Operator, User).",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Alert"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Alerts"
+        ],
+        "summary": "Додає нове сповіщення (тільки для Admin). Використовує DTO для спрощення введення.\\n",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/AlertDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Alert"
+            }
+          }
+        }
+      }
+    },
+    "/api/Alerts/{id}": {
+      "get": {
+        "tags": [
+          "Alerts"
+        ],
+        "summary": "Отримує сповіщення за ID (доступно для Admin, Operator, User).",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Alert"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Alerts"
+        ],
+        "summary": "Оновлює інформацію про сповіщення (тільки для Admin, Operator).",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/AlertDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Alerts"
+        ],
+        "summary": "Видаляє сповіщення за ID (тільки для Admin).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Alerts/{id}/resolve": {
+      "put": {
+        "tags": [
+          "Alerts"
+        ],
+        "summary": "Позначає сповіщення як вирішене (тільки для Admin, Operator).\\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Alerts/generate": {
+      "post": {
+        "tags": [
+          "Alerts"
+        ],
+        "summary": "Генерує критичні сповіщення на основі даних сенсорів (тільки для Admin).\\n",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/LoginRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/RegisterRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/RoadSections": {
+      "get": {
+        "tags": [
+          "RoadSections"
+        ],
+        "summary": "Отримує список всіх ділянок доріг (доступно всім авторизованим).",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/RoadSection"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "RoadSections"
+        ],
+        "summary": "Додає нову ділянку дороги (тільки для Admin).",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/RoadSectionDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RoadSection"
+            }
+          }
+        }
+      }
+    },
+    "/api/RoadSections/{id}": {
+      "get": {
+        "tags": [
+          "RoadSections"
+        ],
+        "summary": "Отримує ділянку дороги за ID (доступно всім авторизованим).",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID ділянки.",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/RoadSection"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "RoadSections"
+        ],
+        "summary": "Оновлює інформацію про ділянку дороги (тільки для Operator, Admin).",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID ділянки.",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Об'єкт із новими даними.",
+            "schema": {
+              "$ref": "#/definitions/RoadSectionDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "RoadSections"
+        ],
+        "summary": "Видаляє ділянку дороги за ID (тільки для Admin).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID ділянки.",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SensorData": {
+      "get": {
+        "tags": [
+          "SensorData"
+        ],
+        "summary": "Отримує всі дані сенсорів.",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/SensorData"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "SensorData"
+        ],
+        "summary": "Додає нові дані сенсора. Приймає спрощений об'єкт DTO.",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Об'єкт DTO з вхідними даними сенсора.",
+            "schema": {
+              "$ref": "#/definitions/SensorDataDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SensorData"
+            }
+          }
+        }
+      }
+    },
+    "/api/SensorData/{id}": {
+      "get": {
+        "tags": [
+          "SensorData"
+        ],
+        "summary": "Отримує дані сенсора за ідентифікатором.",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Ідентифікатор сенсора.",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SensorData"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "SensorData"
+        ],
+        "summary": "Оновлює дані сенсора.",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Ідентифікатор сенсора.",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Об'єкт сенсорних даних для оновлення.",
+            "schema": {
+              "$ref": "#/definitions/SensorDataDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "SensorData"
+        ],
+        "summary": "Видаляє дані сенсора за ідентифікатором.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Ідентифікатор сенсора.",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/SensorData/report": {
+      "get": {
+        "tags": [
+          "SensorData"
+        ],
+        "summary": "Генерує аналітичний звіт за даними сенсорів.",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/api/Sensors": {
+      "get": {
+        "tags": [
+          "Sensors"
+        ],
+        "summary": "Отримує список всіх сенсорів (доступно для User, Operator, Admin).",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Sensor"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Sensors"
+        ],
+        "summary": "Додає новий сенсор (тільки для Admin).",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/SensorDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Sensor"
+            }
+          }
+        }
+      }
+    },
+    "/api/Sensors/{id}": {
+      "get": {
+        "tags": [
+          "Sensors"
+        ],
+        "summary": "Отримує деталі сенсора за ID (доступно для User, Operator, Admin).",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Sensor"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Sensors"
+        ],
+        "summary": "Оновлює інформацію про сенсор (тільки для Operator, Admin).",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/SensorDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Sensors"
+        ],
+        "summary": "Видаляє сенсор за ID (тільки для Admin).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Отримує список всіх користувачів (доступно для User, Operator, Admin).",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Users/{id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Отримує користувача за ID (доступно для User, Operator, Admin).",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Видаляє користувача за ID (доступно лише для Admin).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users/register": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Реєструє нового користувача з хешованим паролем.",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/UserRegisterDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        }
+      }
+    },
+    "/api/Users/login": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Авторизує користувача і повертає JWT-токен.",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/UserLoginDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Users/{id}/role": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Оновлює роль користувача (доступно лише для Admin).",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/UserRoles"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Alert": {
+      "description": "Представляє сповіщення про критичну ситуацію на дорозі.",
+      "required": [
+        "alertType",
+        "createdDate",
+        "isResolved",
+        "message",
+        "roadSectionID"
+      ],
+      "type": "object",
+      "properties": {
+        "alertID": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "roadSectionID": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "alertType": {
+          "maxLength": 50,
+          "minLength": 1,
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 255,
+          "minLength": 1,
+          "type": "string"
+        },
+        "createdDate": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "isResolved": {
+          "type": "boolean"
+        },
+        "roadSection": {
+          "$ref": "#/definitions/RoadSection"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AlertDto": {
+      "required": [
+        "alertType",
+        "message",
+        "roadSectionID"
+      ],
+      "type": "object",
+      "properties": {
+        "roadSectionID": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "alertType": {
+          "maxLength": 50,
+          "minLength": 1,
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 255,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "LoginRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RegisterRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/UserRoles"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RoadSection": {
+      "description": "Представляє ділянку дороги.",
+      "required": [
+        "createdDate",
+        "name"
+      ],
+      "type": "object",
+      "properties": {
+        "roadSectionID": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "name": {
+          "maxLength": 100,
+          "minLength": 1,
+          "type": "string"
+        },
+        "location": {
+          "maxLength": 255,
+          "type": "string"
+        },
+        "createdDate": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "sensors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Sensor"
+          }
+        },
+        "alerts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Alert"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "RoadSectionDto": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "createdDate": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Sensor": {
+      "description": "Представляє сенсор, встановлений на ділянці дороги.",
+      "required": [
+        "installationDate",
+        "roadSectionID",
+        "sensorType",
+        "status"
+      ],
+      "type": "object",
+      "properties": {
+        "sensorID": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "roadSectionID": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "sensorType": {
+          "maxLength": 50,
+          "minLength": 1,
+          "type": "string"
+        },
+        "installationDate": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "status": {
+          "maxLength": 50,
+          "minLength": 1,
+          "type": "string"
+        },
+        "roadSection": {
+          "$ref": "#/definitions/RoadSection"
+        },
+        "sensorData": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SensorData"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "SensorData": {
+      "description": "Представляє дані, отримані від сенсора.",
+      "required": [
+        "dataValue",
+        "parameter",
+        "sensorID",
+        "timestamp"
+      ],
+      "type": "object",
+      "properties": {
+        "sensorDataID": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "sensorID": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "parameter": {
+          "maxLength": 50,
+          "minLength": 1,
+          "type": "string"
+        },
+        "dataValue": {
+          "format": "double",
+          "type": "number"
+        },
+        "timestamp": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "sensor": {
+          "$ref": "#/definitions/Sensor"
+        }
+      },
+      "additionalProperties": false
+    },
+    "SensorDataDto": {
+      "type": "object",
+      "properties": {
+        "sensorID": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "parameter": {
+          "type": "string"
+        },
+        "dataValue": {
+          "format": "double",
+          "type": "number"
+        },
+        "timestamp": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "SensorDto": {
+      "type": "object",
+      "properties": {
+        "roadSectionID": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "sensorType": {
+          "type": "string"
+        },
+        "installationDate": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "User": {
+      "description": "Представляє користувача системи.",
+      "required": [
+        "createdDate",
+        "passwordHash",
+        "role",
+        "userID",
+        "username"
+      ],
+      "type": "object",
+      "properties": {
+        "userID": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "username": {
+          "maxLength": 50,
+          "minLength": 1,
+          "type": "string"
+        },
+        "passwordHash": {
+          "maxLength": 255,
+          "minLength": 1,
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/UserRoles"
+        },
+        "createdDate": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "UserLoginDto": {
+      "required": [
+        "password",
+        "username"
+      ],
+      "type": "object",
+      "properties": {
+        "username": {
+          "maxLength": 50,
+          "minLength": 1,
+          "type": "string"
+        },
+        "password": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "UserRegisterDto": {
+      "required": [
+        "password",
+        "role",
+        "username"
+      ],
+      "type": "object",
+      "properties": {
+        "username": {
+          "maxLength": 50,
+          "minLength": 1,
+          "type": "string"
+        },
+        "password": {
+          "minLength": 6,
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/UserRoles"
+        }
+      },
+      "additionalProperties": false
+    },
+    "UserRoles": {
+      "format": "int32",
+      "enum": [
+        0,
+        1,
+        2
+      ],
+      "type": "integer"
+    }
+  },
+  "securityDefinitions": {
+    "Bearer": { }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ]
+}
