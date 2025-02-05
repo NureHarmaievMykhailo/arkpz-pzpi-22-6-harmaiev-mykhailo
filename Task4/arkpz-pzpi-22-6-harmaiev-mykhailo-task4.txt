@@ -1,1 +1,246 @@
+Міністерство освіти та науки України
+Харківський національний університет радіоелектроніки
+
+
+Кафедра ПІ
+
+
+
+Звіт
+з лабораторної роботи №4
+з дисципліни “Аналіз та ре факторинг коду”
+Тема роботи: «РОЗРОБКА IoT КЛІЄНТА (БІЗНЕС-ЛОГІКИ ТА ФУНКЦІЙ НАЛАШТУВАННЯ)»
+
+Виконав:                                                                                ст. гр. ПЗПІ-22-6 Гармаєв М.С.
+Викладач:                                                                              Сокорчук І.П.
+
+
+
+Харків
+2024 р
+4 РОЗРОБКА IoT КЛІЄНТА (БІЗНЕС-ЛОГІКИ ТА ФУНКЦІЙ НАЛАШТУВАННЯ)
+4.1  Мета роботи
+   На лабораторній роботі №4 потрібно розробити програмне забезпечення для  IoT або SmartDevice пристрою, створеного на базі будь-якої поширеної на  сьогодні платформи, придатної для реалізації вбудованих систем (Embedded  System).
+4.2  Хід роботи
+1) Розробити будову програмного забезпечення ІоТ клієнта.
+Система моніторингу стану доріг, що розробляється в рамках даного проєкту, являє собою комплексне рішення, спрямоване на автоматизацію збору, обробки та передачі даних від IoT-датчиків, встановлених на дорожніх ділянках. Основна мета цього IoT сервісу полягає у створенні окремого клієнтського застосунку, який буде імітувати роботу реальних датчиків, генерувати показники, такі як температура, вологість, ямковість та наявність льоду, а також відправляти ці дані на серверну частину основного проєкту через REST API. Для досягнення цієї мети було розроблено окрему архітектуру, що складається з декількох ключових модулів, серед яких модуль генерації даних, модуль конфігурації, модуль комунікації та головний клас симулятора, який координує роботу всіх компонентів. Дані генеруються за допомогою класу, який використовує вбудований генератор випадкових чисел для імітації різних параметрів датчика, після чого дані перетворюються в об’єкти Data Transfer Object (DTO) для подальшої передачі у форматі JSON. Крім того, застосовано механізм логування, що дозволяє відслідковувати успішну передачу даних і виявлені помилки, забезпечуючи тим самим можливість оперативної діагностики роботи системи.
+2) Створити UML діаграму прецедентів для ІоТ клієнта.
+Для повноцінного опису функціоналу IoT-сервісу було створено UML-діаграму прецедентів, яка ілюструє основні взаємодії між акторами системи – адміністраторами, операторами та звичайними користувачами – та основними процесами, що реалізуються в системі. За допомогою цієї діаграми було продемонстровано, що адміністратор має повний доступ до всіх функцій, включаючи реєстрацію, авторизацію, управління користувачами, керування дорожніми ділянками, додавання та редагування сенсорів, обробку даних сенсорів і генерацію сповіщень, тоді як оператор має можливість оновлення даних та перегляду, а звичайний користувач – лише читання інформації та перегляд аналітики.
+
+Рисунок 4.1 – UML-діаграма прецедентів для ІоТ клієнта
+3) Розробити бізнес логіку (математину обробку повʼязаних із предметною областю даних) та функції налаштування ІоТ клієнта.
+Далі в рамках IoT-сервісу реалізовано бізнес-логіку, що відповідає за математичну обробку даних, отриманих від IoT-датчиків. У цьому контексті бізнес-логіка включає генерацію випадкових значень для таких параметрів, як температура, вологість, рівень ямковості та наявність льоду, а також порівняння цих значень із заданими порогами. У разі, якщо певний параметр перевищує критичне значення, система має згенерувати сповіщення, яке передається на сервер для подальшої обробки. Розроблена логіка дозволяє не лише симулювати роботу датчиків, але й налаштовувати параметри генерації за допомогою конфігураційного файлу, що забезпечує гнучкість і адаптивність рішення до реальних умов.
+4) Створити діаграму діяльності для ІоТ клієнта.
+Для візуалізації робочого процесу IoT-сервісу створено UML-діаграму діяльності, яка ілюструє послідовність дій від запуску симулятора до надсилання даних на сервер. Ця діаграма показує, як система генерує дані за допомогою модуля генерації, перевіряє дані, надсилає їх через комунікаційний модуль і отримує зворотний зв’язок від серверної частини.
+
+Рисунок 4.2 – UML-діаграма діяльності для ІоТ клієнта
+5) Створити програмну реалізацію бізнес логіки та функцій налаштування ІоТ клієнта.
+Основні класи та функції, які реалізовані в IoT-клієнті:
+1. Клас ApiClient
+SendSensorDataAsync(SensorDataDto sensorData) – надсилає дані сенсора на сервер через HTTP-запит.
+2. Клас SensorDataGenerator
+GenerateData() – генерує випадкові значення параметрів сенсорів (температура, вологість, наявність льоду, ям).
+3. Клас IoTSimulator
+StartSimulation() – запускає цикл генерації та відправки даних.
+StopSimulation() – зупиняє симуляцію.
+RunSimulationAsync(CancellationToken cancellationToken) – основний асинхронний цикл роботи IoT-клієнта.
+Ці класи реалізують бізнес-логіку IoT-клієнта, включаючи збір даних, їхню обробку та передачу на сервер. Код наведено у Додатку А «Приклад коду».
+6) Перевірити роботу ІоТ клієнта.
+Роботу було протестовано, результат викладено на YouTube (див. Додаткок Б «Посилання»).
+
+
+
+Додаток А «Приклад коду»
+Клас, що відповідає за генерацію даних сенсора:
+using System;
+using System.Collections.Generic;
+using IoTSensorSimulator.Models;
+
+namespace IoTSensorSimulator.Services
+{
+    /// <summary>
+    /// Клас для генерації випадкових даних сенсора.
+    /// Імітує показники роботи IoT-датчиків, зокрема температуру, вологість,
+    /// рівень ямковості та наявність льоду.
+    /// </summary>
+    public class SensorDataGenerator
+    {
+        private readonly Random _random;
+
+        /// <summary>
+        /// Конструктор класу SensorDataGenerator.
+        /// Ініціалізує генератор випадкових чисел.
+        /// </summary>
+        public SensorDataGenerator()
+        {
+            _random = new Random(); // Можна передати seed, якщо потрібно повторюваність результатів
+        }
+
+        /// <summary>
+        /// Генерує випадкове значення температури в діапазоні від -10°C до +10°C.
+        /// </summary>
+        /// <returns>Значення температури (float).</returns>
+        public float GenerateTemperature() => (float)(_random.NextDouble() * 20 - 10);
+
+        /// <summary>
+        /// Генерує випадкове значення вологості в діапазоні від 40% до 100%.
+        /// </summary>
+        /// <returns>Значення вологості (float).</returns>
+        public float GenerateHumidity() => (float)(_random.NextDouble() * 60 + 40);
+
+        /// <summary>
+        /// Генерує випадковий показник ямковості в діапазоні від 0 до 10.
+        /// </summary>
+        /// <returns>Показник ямковості (float).</returns>
+        public float GeneratePotholeLevel() => (float)(_random.NextDouble() * 10);
+
+        /// <summary>
+        /// Генерує показник наявності льоду: 0 – лід відсутній, 1 – лід виявлено.
+        /// </summary>
+        /// <returns>Ціле число (0 або 1).</returns>
+        public int GenerateIcePresence() => _random.Next(0, 2);
+
+        /// <summary>
+        /// Генерує дані сенсора для декількох параметрів.
+        /// Якщо необхідно, SensorID можна отримувати з конфігурації.
+        /// </summary>
+        /// <returns>Колекція об’єктів SensorDataDto з згенерованими даними.</returns>
+        public IEnumerable<SensorDataDto> GenerateData()
+        {
+            // Значення SensorID можна отримати з конфігурації; тут використовується постійне значення 1
+            int sensorId = 1;
+            DateTime currentTimestamp = DateTime.UtcNow;
+
+            var sensorDataList = new List<SensorDataDto>
+            {
+                new SensorDataDto
+                {
+                    SensorID = sensorId,
+                    Parameter = "Температура",
+                    DataValue = GenerateTemperature(),
+                    Timestamp = currentTimestamp
+                },
+                new SensorDataDto
+                {
+                    SensorID = sensorId,
+                    Parameter = "Вологість",
+                    DataValue = GenerateHumidity(),
+                    Timestamp = currentTimestamp
+                },
+                new SensorDataDto
+                {
+                    SensorID = sensorId,
+                    Parameter = "Ямковість",
+                    DataValue = GeneratePotholeLevel(),
+                    Timestamp = currentTimestamp
+                },
+                new SensorDataDto
+                {
+                    SensorID = sensorId,
+                    Parameter = "Лід",
+                    DataValue = GenerateIcePresence(),
+                    Timestamp = currentTimestamp
+                }
+            };
+
+            return sensorDataList;
+        }
+    }
+}
+
+Клас для імітації роботи:
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using IoTSensorSimulator.Models;
+using IoTSensorSimulator.Services;
+
+namespace IoTSensorSimulator.Services
+{
+    /// <summary>
+    /// Основний клас для симуляції роботи IoT-сенсора.
+    /// </summary>
+    public class IoTSimulator
+    {
+        private readonly SensorDataGenerator _sensorDataGenerator;
+        private readonly ApiClient _apiClient;
+        private readonly int _intervalMilliseconds;
+        private bool _isRunning;
+        private Task _simulationTask;
+        private CancellationTokenSource _cancellationTokenSource;
+
+        /// <summary>
+        /// Ініціалізує новий екземпляр IoTSimulator.
+        /// </summary>
+        /// <param name="sensorDataGenerator">Об'єкт для генерації даних сенсорів.</param>
+        /// <param name="apiClient">Клієнт для взаємодії з сервером.</param>
+        /// <param name="intervalMilliseconds">Інтервал відправки даних у мілісекундах.</param>
+        public IoTSimulator(SensorDataGenerator sensorDataGenerator, ApiClient apiClient, int intervalMilliseconds = 5000)
+        {
+            _sensorDataGenerator = sensorDataGenerator ?? throw new ArgumentNullException(nameof(sensorDataGenerator));
+            _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
+            _intervalMilliseconds = intervalMilliseconds;
+            _isRunning = false;
+        }
+
+        /// <summary>
+        /// Запускає симуляцію.
+        /// </summary>
+        public void StartSimulation()
+        {
+            if (_isRunning)
+                return;
+
+            _isRunning = true;
+            _cancellationTokenSource = new CancellationTokenSource();
+            _simulationTask = Task.Run(() => RunSimulationAsync(_cancellationTokenSource.Token));
+        }
+
+        /// <summary>
+        /// Зупиняє симуляцію.
+        /// </summary>
+        public async Task StopSimulationAsync()
+        {
+            if (!_isRunning)
+                return;
+
+            _isRunning = false;
+            _cancellationTokenSource.Cancel();
+
+            try
+            {
+                await _simulationTask;
+            }
+            catch (TaskCanceledException) { }
+            finally
+            {
+                _cancellationTokenSource.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Основний цикл генерації та відправки даних.
+        /// </summary>
+        private async Task RunSimulationAsync(CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var sensorDataList = _sensorDataGenerator.GenerateData();
+                foreach (var sensorData in sensorDataList)
+                {
+                    await _apiClient.SendSensorDataAsync(sensorData);
+                    Console.WriteLine($"Відправлено: {sensorData.Timestamp} | {sensorData.Parameter}: {sensorData.DataValue}");
+                }
+                await Task.Delay(_intervalMilliseconds, cancellationToken);
+            }
+        }
+    }
+}
+
+
+
+Додаток Б «Посилання»
+Посилання на відеозапис - https://youtu.be/3A5FQH2OP-I 
+Посилання на GitHub репозиторій - https://github.com/NureHarmaievMykhailo/arkpz-pzpi-22-6-harmaiev-mykhailo/tree/main/Task4 
 
